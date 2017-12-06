@@ -1,14 +1,12 @@
 package com.mandelag.minesweeper;
 
 import java.util.Random;
-import java.util.ArrayList;
 
 public class MineBoard{
     private int width, height;
     private int bombs;
     private int[][] grid;
     private static final int VISITED = 9;
-    private static final int NULL = 99;
     
     public MineBoard(){
         this(10, 10);
@@ -36,8 +34,26 @@ public class MineBoard{
         System.out.println("");
     }
     
+    public String reveal(){
+        String result = "";
+        for (int[] grid1 : grid) {
+            for (int w = 0; w < grid1.length; w++) {
+                result += "  " + grid1[w];
+            }
+            result += "\r\n";
+        }
+        return result;
+    }
+    @Override
     public String toString(){
-        return "Not implemented yet.";
+        String result = "";
+        for (int[] grid1 : grid) {
+            for (int w = 0; w < grid1.length; w++) {
+                result += "0 ";
+            }
+            result += "\r\n";
+        }
+        return result;
     }
     
     public int[][] getGrid(){
@@ -86,11 +102,5 @@ public class MineBoard{
                 try {grid[y-1][x-1] += 1;} catch(ArrayIndexOutOfBoundsException e) {}
             }
         }
-    }
-    
-    public static void main(String[] args) {
-        MineBoard mb = new MineBoard(16, 16, 25);
-        MineBoard.printArray(mb.getGrid());
-        MineBoard.printArray(mb.open(2,2));
     }
 }

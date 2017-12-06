@@ -3,6 +3,25 @@
     <head>
         <title>Geo-Minesweeper</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+        <style>
+            .mscol{
+                width: 1.2em;
+                height: 1.2em;
+                margin: 0;
+                padding: 0;
+                border: black solid thin;
+                background-color: bisque;
+            }
+
+            table {
+                text-align: center;
+                border: black solid thin;
+            }
+        </style>
     </head>
     <body>
         <h3>Minesweeper</h3>
@@ -10,6 +29,23 @@
         <table id="grid">
         </table>
         <hr />
-        <button type="submit" name="new_game" value="New Game">New Game</button>
+        <button type="submit" name="new_game" value="New Game" onclick="generateGrid({'width':10, 'height':10, 'id':'grid'})">New Game</button>
+        <script type="text/javascript">
+            function newGame(width, height, bombs){
+                //$.get();
+            }
+            function generateGrid(y){
+                var table = "<table class='minesweeper'>";
+                for (var w=0; w<y.width; w++){
+                    table += "<tr class='msrow'>";
+                    for(var h=0; h<y.height; h++){
+                        table += "<td class='mscol'></td>";
+                    }
+                    table += "</tr>";
+                }
+                table += "</table>";
+                $("#"+y.id).html(table);
+            }
+        </script>
     </body>
 </html>
