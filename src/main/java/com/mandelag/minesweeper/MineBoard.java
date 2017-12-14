@@ -2,6 +2,16 @@ package com.mandelag.minesweeper;
 
 import java.util.Random;
 
+/**
+ * Class representing minesweeper board.
+ * It is a rectangular grid that have a width, a height, and are represented by an array of integers.
+ * Each integer in the array represent object mapping:
+ *   [ 0 -  8] -> represent the number of mine in the eight surrounding grid
+ *          9  -> is a special value that represents a cluster of zeros
+ *   [-8 - -1] -> represents a mine in the grid.
+ * 
+ * @author Keenan
+ */
 public class MineBoard{
     private int width, height;
     private int bombs;
@@ -22,6 +32,13 @@ public class MineBoard{
         this.bombs = nBombs;
         this.grid = new int[height][width];
         initializeBoard();
+    }
+    
+    public MineBoard(int[][] grid){
+        this.width = grid.length;
+        /* height are determined by the array length of the array first entry */
+        this.height = grid[0].length; 
+        this.grid = grid;
     }
     
     public static void printArray(int[][] array){
@@ -102,5 +119,11 @@ public class MineBoard{
                 try {grid[y-1][x-1] += 1;} catch(ArrayIndexOutOfBoundsException e) {}
             }
         }
+    }
+    
+    public static int[][] country2Grid(int width, int height, String country) {
+        int[][] result = new int[height][width];
+        /* not implemented yet */
+        return result;
     }
 }
