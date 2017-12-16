@@ -7,10 +7,13 @@ package com.mandelag.minesweeper;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.geotools.filter.text.cql2.CQLException;
 
 /**
  *
@@ -30,12 +33,25 @@ public class GameServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        MineBoard mb = new MineBoard();
-        
-        try (PrintWriter out = response.getWriter()) {
-            out.print(mb);
+        String country = request.getParameter("country");
+        int size = Integer.parseInt(request.getParameter("grid"));
+        MineBoard mb;
+        try {
+            mb = MineBoard.fromCountry("".equals(country) ? "Indonesia" : country, size > 800 ? 800 : size);
+            try (PrintWriter out = response.getWriter()) {
+                out.print(newGameResponse(mb));
+            }
+        } catch (CQLException ex) {
         }
+    }
+
+    private String newGameResponse(MineBoard mb) {
+        StringBuilder sb = new StringBuilder("{");
+        String sessionId = "hehehehe";
+        sb.append("\"sessionId\": \"").append(sessionId).append("\",\n");
+        sb.append("\"grid\": ").append(mb.arrayToJson()).append("}");
+        System.out.println(sb);
+        return sb.toString();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -4,22 +4,28 @@
         <title>Geo-Minesweeper</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script
-  src="https://code.jquery.com/jquery-3.2.1.js"
-  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
-  crossorigin="anonymous"></script>
+            src="https://code.jquery.com/jquery-3.2.1.js"
+            integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+        crossorigin="anonymous"></script>
         <style>
             .mscol{
                 width: 1.2em;
                 height: 1.2em;
                 margin: 0;
                 padding: 0;
-                border: black solid thin;
-                background-color: bisque;
+                border: sienna solid thin;
+            }
+            .field{
+                background-color: floralwhite;
+            }
+            .out{
+                background-color: burlywood;
             }
 
-            table {
+            table{
                 text-align: center;
-                border: black solid thin;
+                border: sienna solid thin;
+                background-color: burlywood;
             }
         </style>
     </head>
@@ -29,22 +35,40 @@
         <table id="grid">
         </table>
         <hr />
-        <button type="submit" name="new_game" value="New Game" onclick="generateGrid({'width':10, 'height':10, 'id':'grid'})">New Game</button>
+        <!--<button type="submit" name="new_game" value="New Game" onclick="generateGrid({'width':10, 'height':10, 'id':'grid'})">New Game</button>-->
+        <button type="submit" name="new_game" value="New Game" onclick="newGame('China', 400)">New Game</button>
         <script type="text/javascript">
-            function newGame(width, height, bombs){
-                //$.get();
+            function newGame(country, size) {
+                $.get("StartGame?country="+country+"&grid="+size, function (data) {
+                    var j = JSON.parse(data);
+                    var grid = j["grid"];
+                    var table = "<table class='minesweeper'>";
+                    for (var h = 0; h < grid.length; h++) {
+                        table += "<tr class='msrow'>";
+                        for (var w = 0; w < grid[0].length; w++) {
+                            if ( grid[h][w] != -99) {
+                                table += "<td class='mscol field'></td>";
+                            }else {
+                                table += "<td class='mscol out'></td>";
+                            }
+                        }
+                        table += "</tr>";
+                    }
+                    table += "</table>";
+                    $("#grid").html(table);
+                });
             }
-            function generateGrid(y){
+            function generateGrid(y) {
                 var table = "<table class='minesweeper'>";
-                for (var w=0; w<y.width; w++){
+                for (var w = 0; w < y.width; w++) {
                     table += "<tr class='msrow'>";
-                    for(var h=0; h<y.height; h++){
+                    for (var h = 0; h < y.height; h++) {
                         table += "<td class='mscol'></td>";
                     }
                     table += "</tr>";
                 }
                 table += "</table>";
-                $("#"+y.id).html(table);
+                $("#" + y.id).html(table);
             }
         </script>
     </body>

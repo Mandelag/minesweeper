@@ -59,9 +59,9 @@ public class MineBoard {
     }
 
     public MineBoard(int[][] grid) {
-        this.width = grid.length;
+        this.height = grid.length;
         /* height are determined by the array length of the array first entry */
-        this.height = grid[0].length;
+        this.width = grid[0].length;
         this.grid = grid;
     }
 
@@ -74,7 +74,27 @@ public class MineBoard {
         }
         System.out.println("");
     }
-
+    
+    public String arrayToJson(){
+        StringBuilder jsonArray = new StringBuilder("[");
+        //int h = 0;
+        //int w = 0;
+        System.out.println(height + " " + width);
+        for(int h=0;h<height;h++){
+            jsonArray.append('[');
+            for(int w=0; w<width;w++){
+                jsonArray.append(grid[h][w]==-99?grid[h][w]:0).append(',');
+                System.out.print(" "+w);
+            }
+            jsonArray.setCharAt(jsonArray.length()-1, ']');
+            jsonArray.append(',');
+            System.out.println("");
+        }
+        jsonArray.setCharAt(jsonArray.length()-1, ']');
+        
+        return jsonArray.toString();
+    }
+    
     public String reveal() {
         String result = "";
         for (int[] grid1 : grid) {
@@ -290,15 +310,19 @@ public class MineBoard {
                 if (grid.intersection(projectedGeom).getArea() > Math.pow(gridSideLength, 2) / 2) {
                     resultArray[y][x] = 0;
                 } else {
-                    resultArray[y][x] = -9;
+                    resultArray[y][x] = -99;
                 }
-                
             }
         }
         return resultArray;
     }
 
+    public static MineBoard fromCountry(String country, int size) throws IOException, CQLException{
+        MineBoard result = new MineBoard(countryToGrid(country, size));
+        return result;
+    }
+    
     public static void main(String[] args) throws IOException, CQLException {
-        MineBoard.printArray(countryToGrid("Thailand", 400));
+        System.out.println(new MineBoard(countryToGrid("Thailand", 400)).arrayToJson());
     }
 }
