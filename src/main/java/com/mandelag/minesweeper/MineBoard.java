@@ -247,7 +247,7 @@ public class MineBoard {
                 System.out.println("");
             }
         }
-        throw new NullPointerException();
+        return countryToGrid("Indonesia", 400);
     }
 
     private static int[][] geometryToGrid(Geometry geom, int nGrid) throws FactoryException, MismatchedDimensionException, TransformException {

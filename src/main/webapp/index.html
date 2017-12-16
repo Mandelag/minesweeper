@@ -36,10 +36,12 @@
         </table>
         <hr />
         <!--<button type="submit" name="new_game" value="New Game" onclick="generateGrid({'width':10, 'height':10, 'id':'grid'})">New Game</button>-->
-        <button type="submit" name="new_game" value="New Game" onclick="newGame('China', 400)">New Game</button>
+        Select country: <input type="text" name="country" id="country"/><br />
+        Specify the number of grids: <input type="number" name="grid" id="ngrid"/><br/>
+        <button type="submit" name="new_game" value="New Game" onclick="newGame()">New Game</button>
         <script type="text/javascript">
-            function newGame(country, size) {
-                $.get("StartGame?country="+country+"&grid="+size, function (data) {
+            function newGame() {
+                $.get("StartGame?country="+$("#country").val()+"&grid="+$("#ngrid").val(), function (data) {
                     var j = JSON.parse(data);
                     var grid = j["grid"];
                     var table = "<table class='minesweeper'>";
@@ -57,18 +59,6 @@
                     table += "</table>";
                     $("#grid").html(table);
                 });
-            }
-            function generateGrid(y) {
-                var table = "<table class='minesweeper'>";
-                for (var w = 0; w < y.width; w++) {
-                    table += "<tr class='msrow'>";
-                    for (var h = 0; h < y.height; h++) {
-                        table += "<td class='mscol'></td>";
-                    }
-                    table += "</tr>";
-                }
-                table += "</table>";
-                $("#" + y.id).html(table);
             }
         </script>
     </body>

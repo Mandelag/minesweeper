@@ -33,8 +33,18 @@ public class GameServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String country = request.getParameter("country");
-        int size = Integer.parseInt(request.getParameter("grid"));
+        String country = "Indonesia";
+        try {
+             country = request.getParameter("country");
+        } catch (NullPointerException e) {
+
+        }
+        int size = 400;
+        try {
+            size = Integer.parseInt(request.getParameter("grid"));
+        } catch (Exception e) {
+
+        }
         MineBoard mb;
         try {
             mb = MineBoard.fromCountry("".equals(country) ? "Indonesia" : country, size > 800 ? 800 : size);
