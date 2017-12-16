@@ -211,10 +211,8 @@ public class MineBoard {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
                 Object og = feature.getAttribute(0);
-                System.out.println("YA ADA");
                 if (og instanceof Geometry) {
                     Geometry g = (Geometry) og;
-                    System.out.println("AWAWA?");
                     try {
                         return geometryToGrid(g, nGrid);
                     } catch (FactoryException | MismatchedDimensionException | TransformException ex) {
@@ -233,10 +231,12 @@ public class MineBoard {
     }
 
     private static int[][] geometryToGrid(Geometry geom, int nGrid) throws FactoryException, MismatchedDimensionException, TransformException {
+        System.setProperty("org.geotools.referencing.forceXY", "true");
         Envelope ei = geom.getEnvelopeInternal();
-        System.out.println(ei.getMinX() + " " + ei.getMinY() + " " + ei.getMaxX() + " " + ei.getMaxY());
+        //System.out.println(ei.getMinX() + " " + ei.getMinY() + " " + ei.getMaxX() + " " + ei.getMaxY());
         
         Point centroid = geom.getCentroid();
+        Coordinate envelopeCentre = ei.centre();
         CoordinateReferenceSystem crsIn = CRS.decode("EPSG:4326");
         CoordinateReferenceSystem crsOut = CRS.parseWKT("PROJCS[\"Lambert_Azimuthal_Equal_Area\",\n"
                 + "    GEOGCS[\"GCS_WGS_1984\",\n"
@@ -247,52 +247,58 @@ public class MineBoard {
                 + "    PROJECTION[\"Lambert_Azimuthal_Equal_Area\"],\n"
                 + "    PARAMETER[\"False_Easting\",0.0],\n"
                 + "    PARAMETER[\"False_Northing\",0.0],\n"
-                + "    PARAMETER[\"Central_Meridian\"," + centroid.getX() + "],\n"
-                + "    PARAMETER[\"Latitude_Of_Origin\"," + centroid.getY() + "],\n"
+                + "    PARAMETER[\"Central_Meridian\"," + envelopeCentre.x + "],\n"
+                + "    PARAMETER[\"Latitude_Of_Origin\"," + envelopeCentre.y + "],\n"
                 + "    UNIT[\"Meter\",1.0]]");
 
-        System.out.println("Transforming..");
+        //System.out.println("Transforming.."+CRS.getAxisOrder(crsIn) + " " + CRS.getAxisOrder(crsOut));
+        
         MathTransform transform = CRS.findMathTransform(crsIn, crsOut);
         Geometry projectedGeom = JTS.transform((Geometry) geom.clone(), transform);
         Geometry envelopeGeom = projectedGeom.getEnvelope();
         Envelope envelopeInternal = envelopeGeom.getEnvelopeInternal();
-        System.out.println(envelopeInternal.getMinX() + " " + envelopeInternal.getMinY() + envelopeInternal.getMaxX() + " " + envelopeInternal.getMaxY());
+        //System.out.println(envelopeInternal.getMinX() + " " + envelopeInternal.getMinY() + envelopeInternal.getMaxX() + " " + envelopeInternal.getMaxY());
         double envelopeArea = envelopeInternal.getArea();
         double gridSideLength = Math.sqrt(envelopeArea / nGrid);
-        System.out.println(envelopeArea + " " + gridSideLength);
+        //System.out.println(envelopeArea + " " + gridSideLength);
         int nGridX = (int) Math.ceil((envelopeInternal.getMaxX() - envelopeInternal.getMinX()) / gridSideLength);
-        int nGridY = (int) Math.ceil((envelopeInternal.getMaxY() - envelopeInternal.getMaxY()) / gridSideLength);
+        int nGridY = (int) Math.ceil((envelopeInternal.getMaxY() - envelopeInternal.getMinY()) / gridSideLength);
         int[][] resultArray = new int[nGridY][nGridX];
         GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(1000), geom.getSRID());
         /* "topLeft" are relative.. */
+        //System.out.println("Min x " +envelopeInternal.getMinX() + "--" +envelopeInternal.getMaxX() +
+        //        " Min y: " +envelopeInternal.getMinY() + "--" +envelopeInternal.getMaxY()+" !");
         Coordinate topLeft;
         Coordinate topRight;
         Coordinate bottomRight;
         Coordinate bottomLeft;
-
-        for (int x = 0; x < nGridX; x++) {
-            for (int y = 0; y < nGridY; y++) {
-                /* represents "top left" corner of the grid */
-                double xBase = envelopeInternal.getMinX() + gridSideLength * x;
-                double yBase = envelopeInternal.getMinY() + gridSideLength * y;
+        //System.out.println(projectedGeom.toText());
+        for (int y = 0;y<nGridY; y++) {
+            for (int x = 0; x < nGridX; x++) {
+                // represents "top left" corner of the grid 
+                // maximum y minimum x                     
+                double xBase = envelopeInternal.getMinX() + gridSideLength * x;                
+                double yBase = envelopeInternal.getMaxY() - gridSideLength * y; 
+                //System.out.println("Top left ["+x+", "+y+"]:"+ xBase +", " + yBase);
                 topLeft = new Coordinate(xBase, yBase);
                 topRight = new Coordinate(xBase + gridSideLength, yBase);
                 bottomRight = new Coordinate(xBase + gridSideLength, yBase + gridSideLength);
                 bottomLeft = new Coordinate(xBase, yBase + gridSideLength);
 
                 Geometry grid = geomFactory.createPolygon(new Coordinate[]{topLeft, topRight, bottomRight, bottomLeft, topLeft});
-                System.out.println(grid.toText());
+                //System.out.println(grid.toText());
                 if (grid.intersection(projectedGeom).getArea() > Math.pow(gridSideLength, 2) / 2) {
-                    //resultArray[y][x] = 0;
+                    resultArray[y][x] = 0;
                 } else {
-                    resultArray[y][x] = -99;
+                    resultArray[y][x] = -9;
                 }
+                
             }
         }
         return resultArray;
     }
 
     public static void main(String[] args) throws IOException, CQLException {
-        MineBoard.printArray(countryToGrid("Indonesia", 120));
+        MineBoard.printArray(countryToGrid("Thailand", 400));
     }
 }
