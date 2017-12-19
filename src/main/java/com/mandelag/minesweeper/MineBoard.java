@@ -4,7 +4,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import java.util.Random;
 import java.io.File;
@@ -33,14 +32,18 @@ import org.opengis.referencing.operation.TransformException;
  * in the eight surrounding grid 9 -> is a special value that represents a
  * cluster of zeros [-8 - -1] -> represents a mine in the grid.
  *
- * @author Keenan
+ * @author Keenan Gehze
+ * @email keenan.gebze@gmail.com
  */
 public class MineBoard {
 
     private int width, height;
     private int bombs;
     private int[][] grid;
+    private int[][] openedGrid;
+    
     private static final int VISITED = 9;
+    private static final int OUTSIDE = -99;
 
     public MineBoard() {
         this(10, 10);
@@ -65,45 +68,18 @@ public class MineBoard {
         this.grid = grid;
     }
 
-    public static void printArray(int[][] array) {
-        for (int h = 0; h < array.length; h++) {
-            for (int w = 0; w < array[h].length; w++) {
-                System.out.print(array[h][w] >= 0 ? "  " + array[h][w] : " " + array[h][w]);
-            }
-            System.out.println("");
-        }
-        System.out.println("");
-    }
-    
-    public String arrayToJson(){
+    public String arrayToJson() {
         StringBuilder jsonArray = new StringBuilder("[");
-        //int h = 0;
-        //int w = 0;
-        System.out.println(height + " " + width);
-        for(int h=0;h<height;h++){
+        for (int h = 0; h < height; h++) {
             jsonArray.append('[');
-            for(int w=0; w<width;w++){
-                jsonArray.append(grid[h][w]==-99?grid[h][w]:0).append(',');
-                System.out.print(" "+w);
+            for (int w = 0; w < width; w++) {
+                jsonArray.append(grid[h][w] == MineBoard.OUTSIDE ? grid[h][w] : 0).append(',');
             }
-            jsonArray.setCharAt(jsonArray.length()-1, ']');
+            jsonArray.setCharAt(jsonArray.length() - 1, ']');
             jsonArray.append(',');
-            System.out.println("");
         }
-        jsonArray.setCharAt(jsonArray.length()-1, ']');
-        
+        jsonArray.setCharAt(jsonArray.length() - 1, ']');
         return jsonArray.toString();
-    }
-    
-    public String reveal() {
-        String result = "";
-        for (int[] grid1 : grid) {
-            for (int w = 0; w < grid1.length; w++) {
-                result += "  " + grid1[w];
-            }
-            result += "\r\n";
-        }
-        return result;
     }
 
     @Override
@@ -122,10 +98,43 @@ public class MineBoard {
         return grid;
     }
 
+    /**
+     * Method that are called when the a tile is clicked. It will reveal the
+     * tile number in the resulting array. If grid[y,x] >= 1 && grid[y,x] <= 8
+     * then only that particular tile is revealed. If grid[y,x] == 0 then it
+     * will search recursively for neighboring zeros and reveal the adjancent
+     * numbers. If grid[y,x] < 0 then a mine is clicked and counted as game over
+     * on the server side.
+     *
+     * @param x the x location of the requested cell
+     * @param y the y location of the requested cell
+     * @return an array containing opened cells
+     */
     public int[][] open(int x, int y) {
-        return open(new int[height][width], x, y);
+        int[][] result = open(new int[height][width], x, y);
+        // register the opened grid in the openedGrid array
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result[i].length; j++) {
+                openedGrid[i][j] = result[i][j] != 0 ? result[i][j] : openedGrid[i][j];
+            }
+        }
+        return result;
     }
 
+    /**
+     * Method that are called when the a tile is clicked. It will reveal the
+     * tile number in the resulting array. If grid[y,x] >= 1 && grid[y,x] <= 8
+     * then only that particular tile is revealed. If grid[y,x] == 0 then it
+     * will search recursively for neighboring zeros and reveal the adjancent
+     * numbers. If grid[y,x] < 0 then a mine is clicked and counted as game over
+     * in the server side.
+     *
+     * @param result the container for the resulting array (used for searching
+     * recursively)
+     * @param x the x location of the requested cell
+     * @param y the y location of the requested cell
+     * @return an array containing opened cells
+     */
     private int[][] open(int[][] result, int x, int y) {
         if (grid[y][x] == 0) {
             result[y][x] = VISITED;
@@ -239,11 +248,6 @@ public class MineBoard {
                         Logger.getLogger(MineBoard.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-//                for (Object attr : feature.getAttributes()) {
-//                    if (!(attr instanceof Geometry)) {
-//                        System.out.print(", " + attr);
-//                    }
-//                }
                 System.out.println("");
             }
         }
@@ -253,9 +257,7 @@ public class MineBoard {
     private static int[][] geometryToGrid(Geometry geom, int nGrid) throws FactoryException, MismatchedDimensionException, TransformException {
         System.setProperty("org.geotools.referencing.forceXY", "true");
         Envelope ei = geom.getEnvelopeInternal();
-        //System.out.println(ei.getMinX() + " " + ei.getMinY() + " " + ei.getMaxX() + " " + ei.getMaxY());
-        
-        Point centroid = geom.getCentroid();
+
         Coordinate envelopeCentre = ei.centre();
         CoordinateReferenceSystem crsIn = CRS.decode("EPSG:4326");
         CoordinateReferenceSystem crsOut = CRS.parseWKT("PROJCS[\"Lambert_Azimuthal_Equal_Area\",\n"
@@ -271,57 +273,59 @@ public class MineBoard {
                 + "    PARAMETER[\"Latitude_Of_Origin\"," + envelopeCentre.y + "],\n"
                 + "    UNIT[\"Meter\",1.0]]");
 
-        //System.out.println("Transforming.."+CRS.getAxisOrder(crsIn) + " " + CRS.getAxisOrder(crsOut));
-        
         MathTransform transform = CRS.findMathTransform(crsIn, crsOut);
         Geometry projectedGeom = JTS.transform((Geometry) geom.clone(), transform);
         Geometry envelopeGeom = projectedGeom.getEnvelope();
         Envelope envelopeInternal = envelopeGeom.getEnvelopeInternal();
-        //System.out.println(envelopeInternal.getMinX() + " " + envelopeInternal.getMinY() + envelopeInternal.getMaxX() + " " + envelopeInternal.getMaxY());
         double envelopeArea = envelopeInternal.getArea();
         double gridSideLength = Math.sqrt(envelopeArea / nGrid);
-        //System.out.println(envelopeArea + " " + gridSideLength);
         int nGridX = (int) Math.ceil((envelopeInternal.getMaxX() - envelopeInternal.getMinX()) / gridSideLength);
         int nGridY = (int) Math.ceil((envelopeInternal.getMaxY() - envelopeInternal.getMinY()) / gridSideLength);
         int[][] resultArray = new int[nGridY][nGridX];
         GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(1000), geom.getSRID());
         /* "topLeft" are relative.. */
-        //System.out.println("Min x " +envelopeInternal.getMinX() + "--" +envelopeInternal.getMaxX() +
-        //        " Min y: " +envelopeInternal.getMinY() + "--" +envelopeInternal.getMaxY()+" !");
         Coordinate topLeft;
         Coordinate topRight;
         Coordinate bottomRight;
         Coordinate bottomLeft;
-        //System.out.println(projectedGeom.toText());
-        for (int y = 0;y<nGridY; y++) {
+
+        for (int y = 0; y < nGridY; y++) {
             for (int x = 0; x < nGridX; x++) {
                 // represents "top left" corner of the grid 
-                // maximum y minimum x                     
-                double xBase = envelopeInternal.getMinX() + gridSideLength * x;                
-                double yBase = envelopeInternal.getMaxY() - gridSideLength * y; 
-                //System.out.println("Top left ["+x+", "+y+"]:"+ xBase +", " + yBase);
+                double xBase = envelopeInternal.getMinX() + gridSideLength * x;
+                double yBase = envelopeInternal.getMaxY() - gridSideLength * y;
+
                 topLeft = new Coordinate(xBase, yBase);
                 topRight = new Coordinate(xBase + gridSideLength, yBase);
                 bottomRight = new Coordinate(xBase + gridSideLength, yBase + gridSideLength);
                 bottomLeft = new Coordinate(xBase, yBase + gridSideLength);
 
                 Geometry grid = geomFactory.createPolygon(new Coordinate[]{topLeft, topRight, bottomRight, bottomLeft, topLeft});
-                //System.out.println(grid.toText());
                 if (grid.intersection(projectedGeom).getArea() > Math.pow(gridSideLength, 2) / 2) {
                     resultArray[y][x] = 0;
                 } else {
-                    resultArray[y][x] = -99;
+                    resultArray[y][x] = MineBoard.OUTSIDE;
                 }
             }
         }
         return resultArray;
     }
 
-    public static MineBoard fromCountry(String country, int size) throws IOException, CQLException{
+    public static void printArray(int[][] array) {
+        for (int h = 0; h < array.length; h++) {
+            for (int w = 0; w < array[h].length; w++) {
+                System.out.print(array[h][w] >= 0 ? "  " + array[h][w] : " " + array[h][w]);
+            }
+            System.out.println("");
+        }
+        System.out.println("");
+    }
+
+    public static MineBoard fromCountry(String country, int size) throws IOException, CQLException {
         MineBoard result = new MineBoard(countryToGrid(country, size));
         return result;
     }
-    
+
     public static void main(String[] args) throws IOException, CQLException {
         System.out.println(new MineBoard(countryToGrid("Thailand", 400)).arrayToJson());
     }

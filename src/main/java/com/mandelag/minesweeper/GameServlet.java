@@ -7,12 +7,11 @@ package com.mandelag.minesweeper;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.geotools.filter.text.cql2.CQLException;
 
 /**
@@ -32,22 +31,26 @@ public class GameServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        String country = "Indonesia";
-        try {
-             country = request.getParameter("country");
-        } catch (NullPointerException e) {
 
-        }
+        String country = request.getParameter("country");
         int size = 400;
+        if (country == null | "".equals(country)) {
+            country = "Singapore";
+        }
+
         try {
             size = Integer.parseInt(request.getParameter("grid"));
-        } catch (Exception e) {
-
+        } catch (NumberFormatException e) {
         }
-        MineBoard mb;
+        MineBoard mb = null;
+        HttpSession session = request.getSession(true);
+        mb = (MineBoard) session.getAttribute("mineboard");
         try {
-            mb = MineBoard.fromCountry("".equals(country) ? "Indonesia" : country, size > 800 ? 800 : size);
+            if (mb == null) {
+                mb = MineBoard.fromCountry(country, size);
+                session.setAttribute("mineboard", mb);
+            }
+            response.setContentType("text/html;charset=UTF-8");
             try (PrintWriter out = response.getWriter()) {
                 out.print(newGameResponse(mb));
             }
@@ -60,7 +63,6 @@ public class GameServlet extends HttpServlet {
         String sessionId = "hehehehe";
         sb.append("\"sessionId\": \"").append(sessionId).append("\",\n");
         sb.append("\"grid\": ").append(mb.arrayToJson()).append("}");
-        System.out.println(sb);
         return sb.toString();
     }
 
