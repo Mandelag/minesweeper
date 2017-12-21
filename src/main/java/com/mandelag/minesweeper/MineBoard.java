@@ -42,8 +42,8 @@ public class MineBoard {
     private int[][] grid;
     private int[][] openedGrid;
     
-    private static final int VISITED = 9;
-    private static final int OUTSIDE = -99;
+    static final int VISITED = 9;
+    static final int OUTSIDE = -99;
 
     public MineBoard() {
         this(10, 10);
@@ -66,20 +66,6 @@ public class MineBoard {
         /* height are determined by the array length of the array first entry */
         this.width = grid[0].length;
         this.grid = grid;
-    }
-
-    public String arrayToJson() {
-        StringBuilder jsonArray = new StringBuilder("[");
-        for (int h = 0; h < height; h++) {
-            jsonArray.append('[');
-            for (int w = 0; w < width; w++) {
-                jsonArray.append(grid[h][w] == MineBoard.OUTSIDE ? grid[h][w] : 0).append(',');
-            }
-            jsonArray.setCharAt(jsonArray.length() - 1, ']');
-            jsonArray.append(',');
-        }
-        jsonArray.setCharAt(jsonArray.length() - 1, ']');
-        return jsonArray.toString();
     }
 
     @Override
@@ -332,6 +318,6 @@ public class MineBoard {
     }
 
     public static void main(String[] args) throws IOException, CQLException {
-        System.out.println(new MineBoard(countryToGrid("Thailand", 400)).arrayToJson());
+        System.out.println(MineBoardGameService.arrayToJson(countryToGrid("Thailand", 400)));
     }
 }

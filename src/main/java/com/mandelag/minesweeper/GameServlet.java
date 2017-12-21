@@ -43,31 +43,30 @@ public class GameServlet extends HttpServlet {
         }
     }
 
-    private void processNewGame(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    private void processNewGame(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String country = request.getParameter("country");
         int size = 400;
-        if (country == null | "".equals(country)) {
+        if (country == null || "".equals(country)) {
             country = "Singapore";
         }
         try {
             size = Integer.parseInt(request.getParameter("grid"));
         } catch (NumberFormatException e) {
         }
+
         MineBoardGameService mb = null;
         HttpSession session = request.getSession(true);
-        mb = (MineBoardGameService) session.getAttribute("mineboardgameservice");
-        if (mb == null) {
-            mb = new MineBoardGameService(country, size);
-            session.setAttribute("mineboardgameservice", mb);
-        }
+        mb = new MineBoardGameService(country, size);
+        session.setAttribute("mineboardgameservice", mb);
 
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType(
+                "text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             out.print(mb.getCurrentState());
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -106,8 +105,27 @@ public class GameServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void processOpen(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void processOpen(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        MineBoardGameService mb = (MineBoardGameService) request.getSession().getAttribute("mineboardgameservice");
+        if (mb == null) {
+            sendError(request, response);
+            return;
+        }
+
+        int x = Integer.parseInt(request.getParameter("x"));
+        int y = Integer.parseInt(request.getParameter("y"));
+        
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            out.print(mb.open(x, y));
+        }
+    }
+
+    private void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            out.println("{\"status\":\"error\"}");
+        }
     }
 
 }
