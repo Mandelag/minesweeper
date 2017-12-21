@@ -58,7 +58,7 @@ public class MineBoard {
         this.height = height;
         this.bombs = nBombs;
         this.grid = new int[height][width];
-        initializeBoard();
+        this.grid = initializeBoard(grid);
     }
 
     public MineBoard(int[][] grid) {
@@ -66,6 +66,9 @@ public class MineBoard {
         /* height are determined by the array length of the array first entry */
         this.width = grid[0].length;
         this.grid = grid;
+        this.bombs = (this.height * this.width)/20;
+        this.grid = initializeBoard(grid);
+        MineBoard.printArray(grid);
     }
 
     @Override
@@ -97,13 +100,32 @@ public class MineBoard {
      * @return an array containing opened cells
      */
     public int[][] open(int x, int y) {
+        if(grid[y][x] != 0) {
+            int[][] res = new int[height][width];
+            res[y][x] = grid[y][x];
+            return res;
+        }
         int[][] result = open(new int[height][width], x, y);
+        int[][] openedGrid = new int[height][width];
         // register the opened grid in the openedGrid array
+        MineBoard.printArray(result);
+        System.out.println("he");
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result[i].length; j++) {
-                openedGrid[i][j] = result[i][j] != 0 ? result[i][j] : openedGrid[i][j];
+                //openedGrid[i][j] = result[i][j] == -99 ? grid[i][j] : openedGrid[i][j];
+                switch(result[i][j]){
+                    case 9:
+                        openedGrid[i][j] = grid[i][j];
+                        break;
+                    case -99:
+                        openedGrid[i][j] = 0;
+                        break;
+                    default:
+                        openedGrid[i][j] = 0;
+                }
             }
         }
+        //MineBoard.printArray(openedGrid);
         return result;
     }
 
@@ -170,7 +192,7 @@ public class MineBoard {
         return result;
     }
 
-    private void initializeBoard() {
+    private int[][] initializeBoard(int[][] grid) {
         int x, y;
         boolean bombExist = true;
         Random r = new Random();
@@ -215,6 +237,7 @@ public class MineBoard {
                 }
             }
         }
+        return grid;
     }
 
     public static int[][] countryToGrid(String country, int nGrid) throws IOException, CQLException {

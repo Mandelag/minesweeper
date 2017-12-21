@@ -29,9 +29,11 @@ public class MineBoardGameService {
         StringBuilder sb = new StringBuilder("{");
         String sessionId = "hehehehe";
         //sb.append("\"sessionId\": \"").append(sessionId).append("\",\n");
+        int[][] opened = mb.open(x, y);
         sb.append("\"grid\": ")
-                .append(MineBoardGameService.arrayToJson(mb.open(x, y)))
+                .append(MineBoardGameService.arrayToJson2(opened))
                 .append("}");
+        MineBoard.printArray(opened);
         return sb.toString();
     }
 
@@ -57,7 +59,21 @@ public class MineBoardGameService {
         for (int h = 0; h < grid.length; h++) {
             jsonArray.append('[');
             for (int w = 0; w < grid[h].length; w++) {
-                jsonArray.append(grid[h][w] == MineBoard.OUTSIDE ? grid[h][w] : 0).append(',');
+                jsonArray.append(grid[h][w] >= MineBoard.OUTSIDE-10 ? grid[h][w] : 0).append(',');
+            }
+            jsonArray.setCharAt(jsonArray.length() - 1, ']');
+            jsonArray.append(',');
+        }
+        jsonArray.setCharAt(jsonArray.length() - 1, ']');
+        return jsonArray.toString();
+    }
+    
+    public static String arrayToJson2(int[][] grid) {
+        StringBuilder jsonArray = new StringBuilder("[");
+        for (int h = 0; h < grid.length; h++) {
+            jsonArray.append('[');
+            for (int w = 0; w < grid[h].length; w++) {
+                jsonArray.append(grid[h][w]+"").append(',');
             }
             jsonArray.setCharAt(jsonArray.length() - 1, ']');
             jsonArray.append(',');

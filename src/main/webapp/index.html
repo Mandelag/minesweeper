@@ -41,15 +41,15 @@
         <button type="submit" name="new_game" value="New Game" onclick="newGame()">New Game</button>
         <script type="text/javascript">
             function newGame() {
-                $.get("StartGame?country="+$("#country").val()+"&grid="+$("#ngrid").val(), function (data) {
+                $.get("StartGame?task=newGame&country="+$("#country").val()+"&grid="+$("#ngrid").val(), function (data) {
                     var j = JSON.parse(data);
                     var grid = j["grid"];
                     var table = "<table class='minesweeper'>";
                     for (var h = 0; h < grid.length; h++) {
                         table += "<tr class='msrow'>";
                         for (var w = 0; w < grid[0].length; w++) {
-                            if ( grid[h][w] != -99) {
-                                table += "<td class='mscol field'></td>";
+                            if ( grid[h][w] >= -99+10) {
+                                table += "<td class='mscol field' id='x"+w+"y"+h+"' onclick='openGrid("+w+","+h+")'></td>";
                             }else {
                                 table += "<td class='mscol out'></td>";
                             }
@@ -58,6 +58,28 @@
                     }
                     table += "</table>";
                     $("#grid").html(table);
+                });
+            }
+            function openGrid(x, y){
+                $.get("StartGame?task=open&x="+x+"&y="+y, function (data) {
+                    var j = JSON.parse(data);
+                    var grid = j["grid"];
+                    //if(grid[y][x]!=9){
+                    //     $("#x"+y+"y"+x).html("HE"+grid[y][x]);
+                    //}
+                    console.log(grid);
+                    for (var h = 0;h < grid.length; h++) {
+                        for (var w = 0; w < grid[h].length; w++) {
+                            if (grid[h][w] > 0) {
+                                if(grid[h][w] == 9){
+                                    $("#x"+w+"y"+h).css("background-color", "brown");
+                                }else{
+                                    $("#x"+w+"y"+h).html(grid[h][w]);
+                                    console.log("hehe");
+                                }
+                            }
+                        }
+                    }
                 });
             }
         </script>

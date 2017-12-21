@@ -38,6 +38,7 @@ public class GameServlet extends HttpServlet {
                 break;
             case "open":
                 processOpen(request, response);
+                System.out.println("EXECUTED");
                 break;
             default:
         }
@@ -117,6 +118,7 @@ public class GameServlet extends HttpServlet {
         
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            //out.print("WEH");
             out.print(mb.open(x, y));
         }
     }
