@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.geotools.filter.text.cql2.CQLException;
 
 /**
  *
@@ -32,38 +31,40 @@ public class GameServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String task = request.getParameter("task");
+        switch (task) {
+            case "newGame":
+                processNewGame(request, response);
+                break;
+            case "open":
+                processOpen(request, response);
+                break;
+            default:
+        }
+    }
+
+    private void processNewGame(HttpServletRequest request, HttpServletResponse response) throws IOException{
         String country = request.getParameter("country");
         int size = 400;
         if (country == null | "".equals(country)) {
             country = "Singapore";
         }
-
         try {
             size = Integer.parseInt(request.getParameter("grid"));
         } catch (NumberFormatException e) {
         }
-        MineBoard mb = null;
+        MineBoardGameService mb = null;
         HttpSession session = request.getSession(true);
-        mb = (MineBoard) session.getAttribute("mineboard");
-        try {
-            if (mb == null) {
-                mb = MineBoard.fromCountry(country, size);
-                session.setAttribute("mineboard", mb);
-            }
-            response.setContentType("text/html;charset=UTF-8");
-            try (PrintWriter out = response.getWriter()) {
-                out.print(newGameResponse(mb));
-            }
-        } catch (CQLException ex) {
+        mb = (MineBoardGameService) session.getAttribute("mineboardgameservice");
+        if (mb == null) {
+            mb = new MineBoardGameService(country, size);
+            session.setAttribute("mineboardgameservice", mb);
         }
-    }
 
-    private String newGameResponse(MineBoard mb) {
-        StringBuilder sb = new StringBuilder("{");
-        String sessionId = "hehehehe";
-        sb.append("\"sessionId\": \"").append(sessionId).append("\",\n");
-        sb.append("\"grid\": ").append(mb.arrayToJson()).append("}");
-        return sb.toString();
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            out.print(mb.getCurrentState());
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -104,5 +105,9 @@ public class GameServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private void processOpen(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

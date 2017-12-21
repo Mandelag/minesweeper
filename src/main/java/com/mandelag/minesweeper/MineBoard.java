@@ -321,8 +321,13 @@ public class MineBoard {
         System.out.println("");
     }
 
-    public static MineBoard fromCountry(String country, int size) throws IOException, CQLException {
-        MineBoard result = new MineBoard(countryToGrid(country, size));
+    public static MineBoard fromCountry(String country, int size) {
+        MineBoard result = null;
+        try {
+            result = new MineBoard(countryToGrid(country, size));
+        } catch (IOException | CQLException ex) {
+            Logger.getLogger(MineBoard.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return result;
     }
 
