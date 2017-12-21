@@ -162,6 +162,24 @@ public class MineBoard {
                 result[y - 1][x - 1] = (result[y - 1][x - 1] == 0 && grid[y - 1][x - 1] == 0) ? 0 : (result[y - 1][x - 1] == VISITED ? VISITED : grid[y - 1][x - 1]);
             } catch (ArrayIndexOutOfBoundsException e) {
             }
+            
+            try {
+                result[y - 1][x] = (result[y - 1][x] == 0 && grid[y - 1][x] == 0) ? 0 : (result[y - 1][x] == VISITED ? VISITED : grid[y - 1][x]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            try {
+                result[y][x - 1] = (result[y][x - 1] == 0 && grid[y][x - 1] == 0) ? 0 : (result[y][x - 1] == VISITED ? VISITED : grid[y][x - 1]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            try {
+                result[y][x + 1] = (result[y][x + 1] == 0 && grid[y][x + 1] == 0) ? 0 : (result[y][x + 1] == VISITED ? VISITED : grid[y][x + 1]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            try {
+                result[y + 1][x] = (result[y + 1][x] == 0 && grid[y + 1][x] == 0) ? 0 : (result[y + 1][x] == VISITED ? VISITED : grid[y + 1][x]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            
             try {
                 if (grid[y - 1][x] == 0 && result[y - 1][x] != VISITED) {
                     open(result, x, y - 1);
@@ -189,6 +207,7 @@ public class MineBoard {
         } else {
             result[y][x] = grid[y][x];
         }
+        
         return result;
     }
 
