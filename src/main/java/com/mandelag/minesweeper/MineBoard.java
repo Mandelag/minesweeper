@@ -40,7 +40,6 @@ public class MineBoard {
     private int width, height;
     private int bombs;
     private int[][] grid;
-    private int[][] openedGrid;
     
     static final int VISITED = 9;
     static final int OUTSIDE = -99;
