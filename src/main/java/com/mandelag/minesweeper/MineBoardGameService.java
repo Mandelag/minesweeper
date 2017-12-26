@@ -20,6 +20,7 @@ public class MineBoardGameService {
         if (this.mb == null) {
             this.mb = MineBoard.fromCountry("Singapore", 400);
         }
+        System.out.println(mb);
     }
 
     public String open(int x, int y) {
@@ -30,14 +31,17 @@ public class MineBoardGameService {
         String sessionId = "hehehehe";
         //sb.append("\"sessionId\": \"").append(sessionId).append("\",\n");
         int[][] opened = mb.open(x, y);
+        if(opened[y][x] < 0 && opened[y][x] >= -90){
+            lost = true;
+        }
         sb.append("\"grid\": ")
-                .append(MineBoardGameService.arrayToJson2(opened))
+                .append(MineBoardGameService.arrayToJson(opened))
                 .append("}");
         MineBoard.printArray(opened);
         return sb.toString();
     }
 
-    public String getCurrentState() {
+    public String getCurrentState(boolean hidden) {
         //if (isLost()) {
         //    return "{\"status\":\"Game ended\"}";
         //}
@@ -45,7 +49,7 @@ public class MineBoardGameService {
         String sessionId = "hehehehe";
         //sb.append("\"sessionId\": \"").append(sessionId).append("\",\n");
         sb.append("\"grid\": ")
-                .append(MineBoardGameService.arrayToJson(mb.getGrid()))
+                .append(MineBoardGameService.immutableGridToJson(mb.getGrid(), hidden))
                 .append("}");
         return sb.toString();
     }
@@ -59,7 +63,7 @@ public class MineBoardGameService {
         for (int h = 0; h < grid.length; h++) {
             jsonArray.append('[');
             for (int w = 0; w < grid[h].length; w++) {
-                jsonArray.append(grid[h][w] >= MineBoard.OUTSIDE-10 ? grid[h][w] : 0).append(',');
+                jsonArray.append(grid[h][w] + "").append(',');
             }
             jsonArray.setCharAt(jsonArray.length() - 1, ']');
             jsonArray.append(',');
@@ -67,13 +71,13 @@ public class MineBoardGameService {
         jsonArray.setCharAt(jsonArray.length() - 1, ']');
         return jsonArray.toString();
     }
-    
-    public static String arrayToJson2(int[][] grid) {
+
+    public static String immutableGridToJson(ImmutableGrid ig, boolean hide) {
         StringBuilder jsonArray = new StringBuilder("[");
-        for (int h = 0; h < grid.length; h++) {
+        for (int y = 0; y < ig.getHeight(); y++) {
             jsonArray.append('[');
-            for (int w = 0; w < grid[h].length; w++) {
-                jsonArray.append(grid[h][w]+"").append(',');
+            for (int x = 0; x < ig.getWidth(); x++) {
+                jsonArray.append(hide ? (ig.get(x, y) < -90 ? -99 : 0) : ig.get(x, y) + "").append(',');
             }
             jsonArray.setCharAt(jsonArray.length() - 1, ']');
             jsonArray.append(',');

@@ -55,7 +55,13 @@ public class ImmutableGrid {
             {1,2,10},
             {100,12,30}};
         ImmutableGrid ig = new ImmutableGrid(intGrid);
-        System.out.println(ig.get(1, 2));
+        
+        for(int i=0;i<ig.getWidth();i++){
+            for(int j=0;j<ig.getWidth();j++){
+                System.out.print(ig.get(j,i)+" ");
+            }
+            System.out.println("");
+        }
     }
 
     public int getWidth() {
@@ -69,9 +75,9 @@ public class ImmutableGrid {
     @Override
     public String toString(){
         String result = "";
-        for (int h = 0; h <= this.getHeight(); h++) {
+        for (int h = 0; h < this.getHeight(); h++) {
             for (int w = 0; w < this.getWidth(); w++) {
-                result += this.get(h,w)+" ";
+                result += this.get(w,h)+" ";
             }
             result += "\r\n";
         }

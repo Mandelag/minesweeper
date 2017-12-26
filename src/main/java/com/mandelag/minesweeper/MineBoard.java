@@ -41,7 +41,7 @@ public class MineBoard {
     private int bombs;
     //private int[][] grid;
     private final ImmutableGrid grid;
-    
+
     static final int VISITED = 9;
     static final int OUTSIDE = -99;
 
@@ -50,27 +50,27 @@ public class MineBoard {
     }
 
     public MineBoard(int width, int height) {
-        this(new int[height][width], (height*width)/20);
+        this(new int[height][width], (height * width) / 20);
     }
 
     public MineBoard(int width, int height, int nBombs) {
         this(new int[height][width], nBombs);
     }
-    
+
     public MineBoard(int[][] gridTemplate, int nBombs) {
         this.height = gridTemplate.length;
         /* height are determined by the array length of the array first entry */
         this.width = gridTemplate[0].length;
-        this.bombs = (this.height * this.width)/20;
+        this.bombs = (this.height * this.width) / 20;
         grid = new ImmutableGrid(initializeBoard(gridTemplate));
     }
 
     @Override
     public String toString() {
         String result = "";
-        for (int h = 0; h <= grid.getHeight(); h++) {
+        for (int h = 0; h < grid.getHeight(); h++) {
             for (int w = 0; w < grid.getWidth(); w++) {
-                result += grid.get(h,w)+" ";
+                result += grid.get(w, h) + " ";
             }
             result += "\r\n";
         }
@@ -94,9 +94,17 @@ public class MineBoard {
      * @return an array containing opened cells
      */
     public int[][] open(int x, int y) {
-        if(grid.get(x,y) != 0) {
+        if (grid.get(x, y) > 0 || grid.get(x,y)<-90) {
             int[][] res = new int[height][width];
-            res[y][x] = grid.get(x,y);
+            res[y][x] = grid.get(x, y);
+            return res;
+        } else if (grid.get(x, y) < 0 && grid.get(x, y) >= -90) {
+            int[][] res = new int[height][width];
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    res[i][j] = grid.get(j, i);
+                }
+            }
             return res;
         }
         int[][] result = open(new int[height][width], x, y);
@@ -106,9 +114,9 @@ public class MineBoard {
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result[i].length; j++) {
                 //openedGrid[i][j] = result[i][j] == -99 ? grid[i][j] : openedGrid[i][j];
-                switch(result[i][j]){
+                switch (result[i][j]) {
                     case 9:
-                        openedGrid[i][j] = grid.get(j,i);
+                        openedGrid[i][j] = grid.get(j, i);
                         break;
                     case -99:
                         openedGrid[i][j] = 0;
@@ -137,70 +145,70 @@ public class MineBoard {
      * @return an array containing opened cells
      */
     private int[][] open(int[][] result, int x, int y) {
-        if (grid.get(x,y) == 0) {
+        if (grid.get(x, y) == 0) {
             result[y][x] = VISITED;
             try {
-                result[y + 1][x + 1] = (result[y + 1][x + 1] == 0 && grid.get(x+1,y+1) == 0) ? 0 : (result[y + 1][x + 1] == VISITED ? VISITED : grid.get(x+1,y+1));
+                result[y + 1][x + 1] = (result[y + 1][x + 1] == 0 && grid.get(x + 1, y + 1) == 0) ? 0 : (result[y + 1][x + 1] == VISITED ? VISITED : grid.get(x + 1, y + 1));
             } catch (ArrayIndexOutOfBoundsException e) {
             }
             try {
-                result[y + 1][x - 1] = (result[y + 1][x - 1] == 0 && grid.get(x-1,y+1) == 0) ? 0 : (result[y + 1][x - 1] == VISITED ? VISITED : grid.get(x-1,y+1));
+                result[y + 1][x - 1] = (result[y + 1][x - 1] == 0 && grid.get(x - 1, y + 1) == 0) ? 0 : (result[y + 1][x - 1] == VISITED ? VISITED : grid.get(x - 1, y + 1));
             } catch (ArrayIndexOutOfBoundsException e) {
             }
             try {
-                result[y - 1][x + 1] = (result[y - 1][x + 1] == 0 && grid.get(x+1,y-1) == 0) ? 0 : (result[y - 1][x + 1] == VISITED ? VISITED : grid.get(x+1,y-1));
+                result[y - 1][x + 1] = (result[y - 1][x + 1] == 0 && grid.get(x + 1, y - 1) == 0) ? 0 : (result[y - 1][x + 1] == VISITED ? VISITED : grid.get(x + 1, y - 1));
             } catch (ArrayIndexOutOfBoundsException e) {
             }
             try {
-                result[y - 1][x - 1] = (result[y - 1][x - 1] == 0 && grid.get(x-1,y-1) == 0) ? 0 : (result[y - 1][x - 1] == VISITED ? VISITED : grid.get(x-1,y-1));
+                result[y - 1][x - 1] = (result[y - 1][x - 1] == 0 && grid.get(x - 1, y - 1) == 0) ? 0 : (result[y - 1][x - 1] == VISITED ? VISITED : grid.get(x - 1, y - 1));
             } catch (ArrayIndexOutOfBoundsException e) {
             }
-            
+
             try {
-                result[y - 1][x] = (result[y - 1][x] == 0 && grid.get(x,y-1) == 0) ? 0 : (result[y - 1][x] == VISITED ? VISITED : grid.get(x,y-1));
-            } catch (ArrayIndexOutOfBoundsException e) {
-            }
-            try {
-                result[y][x - 1] = (result[y][x - 1] == 0 && grid.get(x-1,y) == 0) ? 0 : (result[y][x - 1] == VISITED ? VISITED : grid.get(x-1,y));
+                result[y - 1][x] = (result[y - 1][x] == 0 && grid.get(x, y - 1) == 0) ? 0 : (result[y - 1][x] == VISITED ? VISITED : grid.get(x, y - 1));
             } catch (ArrayIndexOutOfBoundsException e) {
             }
             try {
-                result[y][x + 1] = (result[y][x + 1] == 0 && grid.get(x+1,y) == 0) ? 0 : (result[y][x + 1] == VISITED ? VISITED : grid.get(x+1,y));
+                result[y][x - 1] = (result[y][x - 1] == 0 && grid.get(x - 1, y) == 0) ? 0 : (result[y][x - 1] == VISITED ? VISITED : grid.get(x - 1, y));
             } catch (ArrayIndexOutOfBoundsException e) {
             }
             try {
-                result[y + 1][x] = (result[y + 1][x] == 0 && grid.get(x,y+1) == 0) ? 0 : (result[y + 1][x] == VISITED ? VISITED : grid.get(x,y+1));
+                result[y][x + 1] = (result[y][x + 1] == 0 && grid.get(x + 1, y) == 0) ? 0 : (result[y][x + 1] == VISITED ? VISITED : grid.get(x + 1, y));
             } catch (ArrayIndexOutOfBoundsException e) {
             }
-            
             try {
-                if (grid.get(x,y-1)== 0 && result[y - 1][x] != VISITED) {
+                result[y + 1][x] = (result[y + 1][x] == 0 && grid.get(x, y + 1) == 0) ? 0 : (result[y + 1][x] == VISITED ? VISITED : grid.get(x, y + 1));
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+
+            try {
+                if (grid.get(x, y - 1) == 0 && result[y - 1][x] != VISITED) {
                     open(result, x, y - 1);
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
             }
             try {
-                if (grid.get(x+1,y) == 0 && result[y][x + 1] != VISITED) {
+                if (grid.get(x + 1, y) == 0 && result[y][x + 1] != VISITED) {
                     open(result, x + 1, y);
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
             }
             try {
-                if (grid.get(x-1,y) == 0 && result[y][x - 1] != VISITED) {
+                if (grid.get(x - 1, y) == 0 && result[y][x - 1] != VISITED) {
                     open(result, x - 1, y);
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
             }
             try {
-                if (grid.get(x,y+1) == 0 && result[y + 1][x] != VISITED) {
+                if (grid.get(x, y + 1) == 0 && result[y + 1][x] != VISITED) {
                     open(result, x, y + 1);
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
             }
         } else {
-            result[y][x] = grid.get(x,y);
+            result[y][x] = grid.get(x, y);
         }
-        
+
         return result;
     }
 
@@ -345,7 +353,7 @@ public class MineBoard {
     public static MineBoard fromCountry(String country, int size) {
         MineBoard result = null;
         try {
-            result = new MineBoard(countryToGrid(country, size), size/30);
+            result = new MineBoard(countryToGrid(country, size), size / 30);
         } catch (IOException | CQLException ex) {
             Logger.getLogger(MineBoard.class.getName()).log(Level.SEVERE, null, ex);
         }
