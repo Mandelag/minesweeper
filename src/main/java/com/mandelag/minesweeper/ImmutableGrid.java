@@ -5,6 +5,7 @@
  */
 package com.mandelag.minesweeper;
 
+
 /**
  * A wrapper class for two dimensional array.
  * Applying Immutable Object design pattern.
@@ -13,9 +14,17 @@ package com.mandelag.minesweeper;
  */
 public class ImmutableGrid {
     private final byte[][] grid;
+    private final int width;
+    private final int height;
+    
+    public ImmutableGrid(int height, int width){
+        this(new byte[height][width]);
+    }
     
     public ImmutableGrid(byte[][] grid){
         this.grid = grid;
+        this.height = grid.length;
+        this.width = grid[0].length;
     }
     
     public ImmutableGrid(int[][] grid){
@@ -26,6 +35,8 @@ public class ImmutableGrid {
             }
         }
         this.grid = byteGrid;
+        this.height = grid.length;
+        this.width = grid[0].length;
     }
     
     /**
@@ -45,6 +56,26 @@ public class ImmutableGrid {
             {100,12,30}};
         ImmutableGrid ig = new ImmutableGrid(intGrid);
         System.out.println(ig.get(1, 2));
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+    
+    @Override
+    public String toString(){
+        String result = "";
+        for (int h = 0; h <= this.getHeight(); h++) {
+            for (int w = 0; w < this.getWidth(); w++) {
+                result += this.get(h,w)+" ";
+            }
+            result += "\r\n";
+        }
+        return result;
     }
     
 }
