@@ -32,6 +32,7 @@
     <body>
         <h3>Minesweeper</h3>
         <hr/>
+        <p id="msg"></p>
         <table id="grid">
         </table>
         <hr />
@@ -64,10 +65,17 @@
                 $.get("StartGame?task=open&x="+x+"&y="+y, function (data) {
                     var j = JSON.parse(data);
                     var grid = j["grid"];
-                    //if(grid[y][x]!=9){
-                    //     $("#x"+y+"y"+x).html("HE"+grid[y][x]);
-                    //}
                     console.log(grid);
+                    if(!grid){
+                        alert("Game has ended. Please start a new game.");
+                        return;
+                    }
+                    
+                    if(grid[y][x] >= -9 && grid[y][x] <0) {
+                        $("#msg").html("GAME OVER!");
+                        console.log("GAME OVER.");
+                    }
+                    
                     for (var h = 0;h < grid.length; h++) {
                         for (var w = 0; w < grid[h].length; w++) {
                             if (grid[h][w] > 0) {
@@ -75,7 +83,6 @@
                                     $("#x"+w+"y"+h).css("background-color", "brown");
                                 }else{
                                     $("#x"+w+"y"+h).html(grid[h][w]);
-                                    console.log("hehe");
                                 }
                             }else if (grid[h][w] >= -9 && grid[h][w] <0) {
                                 $("#x"+w+"y"+h).css("background-color", "red");

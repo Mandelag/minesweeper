@@ -32,14 +32,13 @@ import org.opengis.referencing.operation.TransformException;
  * in the eight surrounding grid 9 -> is a special value that represents a
  * cluster of zeros [-8 - -1] -> represents a mine in the grid.
  *
- * @author Keenan Gehze
+ * @author Keenan Gebze
  * @email keenan.gebze@gmail.com
  */
 public class MineBoard {
 
     private int width, height;
     private int bombs;
-    //private int[][] grid;
     private final ImmutableGrid grid;
 
     static final int VISITED = 9;
@@ -62,7 +61,7 @@ public class MineBoard {
         /* height are determined by the array length of the array first entry */
         this.width = gridTemplate[0].length;
         this.bombs = (this.height * this.width) / 20;
-        grid = new ImmutableGrid(initializeBoard(gridTemplate));
+        this.grid = new ImmutableGrid(initializeBoard(gridTemplate));
     }
 
     @Override
@@ -126,7 +125,6 @@ public class MineBoard {
                 }
             }
         }
-        //MineBoard.printArray(openedGrid);
         return result;
     }
 
