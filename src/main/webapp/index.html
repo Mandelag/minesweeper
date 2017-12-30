@@ -34,23 +34,33 @@
                 text-align: center;
                 /*border: sienna solid thin;*/
                 background-color: black;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #main{
+                background-color:black;
+                width:100%;
             }
         </style>
     </head>
     <body>
-        <h3>Minesweeper</h3>
-        <hr/>
-        <p id="msg"></p>
-        <table id="grid">
-        </table>
-        <hr />
+        <h4>Geographic Minesweeper</h4>
         <!--<button type="submit" name="new_game" value="New Game" onclick="generateGrid({'width':10, 'height':10, 'id':'grid'})">New Game</button>-->
-        Select country: <input type="text" name="country" id="country"/><br />
-        Specify the number of grids: <input type="number" name="grid" id="ngrid"/><br/>
-        <button type="submit" name="new_game" value="New Game" onclick="newGame()">New Game</button>
+        Select country: <input type="text" name="country" id="country"/>|
+        Specify the number of grids: <input type="number" name="grid" id="ngrid"/>|
+        <button type="submit" name="new_game" value="New Game" onclick="newGame()" id="new_game">New Game</button>
+        <br/>
+        <br />
+        <div id="main">
+            <table id="grid">
+            </table>
+        </div>
+        
         <script type="text/javascript">
             //return minesweeper array grid
             function newGame() {
+                $("#new_game").attr("disabled", "disabled");
+                $("#new_game").html("Loading grid...");
                 $.get("StartGame?task=newGame&country=" + $("#country").val() + "&grid=" + $("#ngrid").val(), function (data) {
                     var j = JSON.parse(data);
                     var grid = j["grid"];
@@ -68,10 +78,12 @@
                     }
                     table += "</table>";
                     $("#grid").html(table);
+                    $("#new_game").html("New Game");
+                    $("#new_game").removeAttr("disabled");
                 });
             }
-            
-            var d = $("<div>Game Over!</div>");
+
+            var d = $("<div title='Game Over'>Game Over!</div>");
             d.dialog({
                 autoOpen: false
             });
@@ -94,7 +106,7 @@
                         for (var w = 0; w < grid[h].length; w++) {
                             if (grid[h][w] > 0) {
                                 if (grid[h][w] == 9) {
-                                    $("#x" + w + "y" + h).css("background-color", "lightsteelblue");
+                                    $("#x" + w + "y" + h).css("background-color", "gainsboro");
                                 } else {
                                     $("#x" + w + "y" + h).html(grid[h][w]);
                                 }
