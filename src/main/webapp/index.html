@@ -7,25 +7,33 @@
             src="https://code.jquery.com/jquery-3.2.1.js"
             integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
         crossorigin="anonymous"></script>
+        <script
+            src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+        crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <style>
             .mscol{
                 width: 1.2em;
                 height: 1.2em;
                 margin: 0;
                 padding: 0;
-                border: sienna solid thin;
+                /*border: black solid thin;*/
             }
             .field{
-                background-color: floralwhite;
+                background-color: white;
+                font-family: "Arial";
+                font-weight: bold;
+                font-size: 0.8em;
             }
             .out{
-                background-color: burlywood;
+                background-color: black;
             }
 
             table{
                 text-align: center;
-                border: sienna solid thin;
-                background-color: burlywood;
+                /*border: sienna solid thin;*/
+                background-color: black;
             }
         </style>
     </head>
@@ -41,17 +49,18 @@
         Specify the number of grids: <input type="number" name="grid" id="ngrid"/><br/>
         <button type="submit" name="new_game" value="New Game" onclick="newGame()">New Game</button>
         <script type="text/javascript">
+            //return minesweeper array grid
             function newGame() {
-                $.get("StartGame?task=newGame&country="+$("#country").val()+"&grid="+$("#ngrid").val(), function (data) {
+                $.get("StartGame?task=newGame&country=" + $("#country").val() + "&grid=" + $("#ngrid").val(), function (data) {
                     var j = JSON.parse(data);
                     var grid = j["grid"];
                     var table = "<table class='minesweeper'>";
                     for (var h = 0; h < grid.length; h++) {
                         table += "<tr class='msrow'>";
                         for (var w = 0; w < grid[0].length; w++) {
-                            if ( grid[h][w] >= -99+10) {
-                                table += "<td class='mscol field' id='x"+w+"y"+h+"' onclick='openGrid("+w+","+h+")'></td>";
-                            }else {
+                            if (grid[h][w] >= -99 + 10) {
+                                table += "<td class='mscol field' id='x" + w + "y" + h + "' onclick='openGrid(" + w + "," + h + ")'></td>";
+                            } else {
                                 table += "<td class='mscol out'></td>";
                             }
                         }
@@ -61,32 +70,37 @@
                     $("#grid").html(table);
                 });
             }
-            function openGrid(x, y){
-                $.get("StartGame?task=open&x="+x+"&y="+y, function (data) {
+            
+            var d = $("<div>Game Over!</div>");
+            d.dialog({
+                autoOpen: false
+            });
+            // return data["status"], data["value"], and data["grid"]
+            function openGrid(x, y) {
+                $.get("StartGame?task=open&x=" + x + "&y=" + y, function (data) {
                     var j = JSON.parse(data);
                     var grid = j["grid"];
                     console.log(grid);
-                    if(!grid){
+                    if (!grid) {
                         alert("Game has ended. Please start a new game.");
                         return;
                     }
-                    
-                    if(grid[y][x] >= -9 && grid[y][x] <0) {
-                        $("#msg").html("GAME OVER!");
-                        console.log("GAME OVER.");
+
+                    if (grid[y][x] >= -9 && grid[y][x] < 0) {
+                        d.dialog("open");
                     }
-                    
-                    for (var h = 0;h < grid.length; h++) {
+
+                    for (var h = 0; h < grid.length; h++) {
                         for (var w = 0; w < grid[h].length; w++) {
                             if (grid[h][w] > 0) {
-                                if(grid[h][w] == 9){
-                                    $("#x"+w+"y"+h).css("background-color", "brown");
-                                }else{
-                                    $("#x"+w+"y"+h).html(grid[h][w]);
+                                if (grid[h][w] == 9) {
+                                    $("#x" + w + "y" + h).css("background-color", "lightsteelblue");
+                                } else {
+                                    $("#x" + w + "y" + h).html(grid[h][w]);
                                 }
-                            }else if (grid[h][w] >= -9 && grid[h][w] <0) {
-                                $("#x"+w+"y"+h).css("background-color", "red");
-                                $("#x"+w+"y"+h).html("X");
+                            } else if (grid[h][w] >= -9 && grid[h][w] < 0) {
+                                $("#x" + w + "y" + h).css("background-color", "red");
+                                $("#x" + w + "y" + h).html("X");
                             }
                         }
                     }
