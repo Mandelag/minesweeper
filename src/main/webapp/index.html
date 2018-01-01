@@ -16,16 +16,48 @@
             .mscol{
                 width: 1.2em;
                 height: 1.2em;
-                margin: 0;
+                margin: 3px 3px 3px 3px;
                 padding: 0;
-                /*border: black solid thin;*/
             }
             .field{
                 background-color: white;
                 font-family: "Arial";
-                font-weight: bold;
-                font-size: 0.8em;
+                font-weight: bolder;
+                font-size: 0.9em;
             }
+            .closed {
+                background-color: white;
+            }
+            .opened {
+                box-shadow: 0px 0px 0px grey;
+                background-color: gainsboro;
+            }
+            
+            .one {
+                color: blue;
+            }
+            .two {
+                color: mediumseagreen;
+            }
+            .three {
+                color: red;
+            }
+            .four {
+                color: midnightblue;
+            }
+            .five {
+                color: brown;
+            }
+            .six {
+                color: teal;
+            }
+            .seven {
+                color: purple;
+            }
+            .eight {
+                color: ivory;
+            }
+            
             .out{
                 background-color: black;
             }
@@ -55,7 +87,7 @@
             <table id="grid">
             </table>
         </div>
-        
+
         <script type="text/javascript">
             //return minesweeper array grid
             function newGame() {
@@ -66,7 +98,7 @@
                     var grid = j["grid"];
                     var table = "<table class='minesweeper'>";
                     for (var h = 0; h < grid.length; h++) {
-                        table += "<tr class='msrow'>";
+                        table += "<tr class='msrow closed'>";
                         for (var w = 0; w < grid[0].length; w++) {
                             if (grid[h][w] >= -99 + 10) {
                                 table += "<td class='mscol field' id='x" + w + "y" + h + "' onclick='openGrid(" + w + "," + h + ")'></td>";
@@ -101,15 +133,26 @@
                     if (grid[y][x] >= -9 && grid[y][x] < 0) {
                         d.dialog("open");
                     }
-
+                    var numberMap = {
+                        "1": "one",
+                        "2": "two",
+                        "3": "three",
+                        "4": "four",
+                        "5": "five",
+                        "6": "six",
+                        "7": "seven",
+                        "8": "eight"
+                    }
                     for (var h = 0; h < grid.length; h++) {
                         for (var w = 0; w < grid[h].length; w++) {
                             if (grid[h][w] > 0) {
                                 if (grid[h][w] == 9) {
-                                    $("#x" + w + "y" + h).css("background-color", "gainsboro");
+                                    $("#x" + w + "y" + h).removeClass("closed");
                                 } else {
                                     $("#x" + w + "y" + h).html(grid[h][w]);
+                                    $("#x" + w + "y" + h).addClass(numberMap[grid[h][w]]);
                                 }
+                                $("#x" + w + "y" + h).addClass("opened");
                             } else if (grid[h][w] >= -9 && grid[h][w] < 0) {
                                 $("#x" + w + "y" + h).css("background-color", "red");
                                 $("#x" + w + "y" + h).html("X");
