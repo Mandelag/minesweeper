@@ -203,6 +203,31 @@ public class MineBoard {
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
             }
+            try {
+                if (grid.get(x - 1, y - 1) == 0 && result[y - 1][x - 1] != VISITED) {
+                    open(result, x - 1, y - 1);
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            try {
+                if (grid.get(x - 1, y + 1) == 0 && result[y + 1][x - 1] != VISITED) {
+                    open(result, x - 1, y + 1);
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            try {
+                if (grid.get(x + 1, y - 1) == 0 && result[y - 1][x + 1] != VISITED) {
+                    open(result, x + 1, y - 1);
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            try {
+                if (grid.get(x + 1, y + 1) == 0 && result[y + 1][x + 1] != VISITED) {
+                    open(result, x + 1, y + 1);
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
+            
         } else {
             result[y][x] = grid.get(x, y);
         }
