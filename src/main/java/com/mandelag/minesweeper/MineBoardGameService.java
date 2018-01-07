@@ -14,11 +14,16 @@ public class MineBoardGameService {
 
     private MineBoard mb;
     private boolean lost;
+    private static QueryableGeoGridTemplateGenerator templater;
 
     public MineBoardGameService(String country, int size) {
         this.mb = MineBoard.fromCountry(country, size);
+        if(templater == null){
+            templater = new CachedGeoToolsGridGenerator("C:\\Users\\keenan\\shapefile\\TM_WORLD_BORDERS-0.3.shp");
+        }
         if (this.mb == null) {
-            this.mb = MineBoard.fromCountry("Singapore", 400);
+            //this.mb = MineBoard.fromCountry("Singapore", 400);
+            this.mb = new MineBoard(templater.query(country, size), 10);
         }
         System.out.println(mb);
     }
