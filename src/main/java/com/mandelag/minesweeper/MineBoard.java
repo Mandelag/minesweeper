@@ -42,14 +42,6 @@ public class MineBoard {
         this.bombs = (this.height * this.width) / 20;
         this.grid = new ImmutableGrid(initializeBoard(gridTemplate));
     }
-
-    public MineBoard(ImmutableGrid gridTemplate, int nBombs) {
-        this.height = gridTemplate.getHeight();
-        /* height are determined by the array length of the array first entry */
-        this.width = gridTemplate.getWidth();
-        this.bombs = (this.height * this.width) / 20;
-        this.grid = new ImmutableGrid(initializeBoard(gridTemplate));
-    }
     
     @Override
     public String toString() {
@@ -275,60 +267,6 @@ public class MineBoard {
         return grid;
     }
     
-    /**
-     * Places bombs in the grid.
-     * @param grid
-     * @return 
-     */
-    private int[][] initializeBoard(ImmutableGrid immutableGrid) {
-        int x, y;
-        boolean bombExist = true;
-        int[][] grid = new int[immutableGrid.getHeight()][immutableGrid.getWidth()];
-        Random r = new Random();
-        for (int b = bombs; b > 0; b--) {
-            x = r.nextInt(width);
-            y = r.nextInt(height);
-            if (immutableGrid.get(x,y) < 0) {
-                b++;
-            } else {
-                grid[y][x] = -9;
-                try {
-                    grid[y][x + 1] += 1;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                }
-                try {
-                    grid[y][x - 1] += 1;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                }
-                try {
-                    grid[y + 1][x] += 1;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                }
-                try {
-                    grid[y + 1][x + 1] += 1;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                }
-                try {
-                    grid[y + 1][x - 1] += 1;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                }
-                try {
-                    grid[y - 1][x] += 1;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                }
-                try {
-                    grid[y - 1][x + 1] += 1;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                }
-                try {
-                    grid[y - 1][x - 1] += 1;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                }
-            }
-        }
-        return grid;
-    }
-
     public static void printArray(int[][] array) {
         for (int h = 0; h < array.length; h++) {
             for (int w = 0; w < array[h].length; w++) {

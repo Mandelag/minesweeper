@@ -84,4 +84,14 @@ public class ImmutableGrid {
         return result;
     }
     
+    public int[][] toIntegerArrays(){
+        int[][] result = new int[getHeight()][getWidth()];
+        for (int h = 0; h < this.getHeight(); h++) {
+            for (int w = 0; w < this.getWidth(); w++) {
+                result[h][w] = get(w,h);
+            }
+        }
+        return result;
+    }
+    
 }

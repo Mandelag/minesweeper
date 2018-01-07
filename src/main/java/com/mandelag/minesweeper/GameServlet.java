@@ -55,15 +55,15 @@ public class GameServlet extends HttpServlet {
         } catch (NumberFormatException e) {
         }
 
-        MineBoardGameService mb = null;
+        MineBoardGameService mbgs = null;
         HttpSession session = request.getSession(true);
-        mb = new MineBoardGameService(country, size);
-        session.setAttribute("mineboardgameservice", mb);
+        mbgs = new MineBoardGameService(country, size);
+        session.setAttribute("mineboardgameservice", mbgs);
 
         response.setContentType(
                 "text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            out.print(mb.getCurrentState(true));
+            out.print(mbgs.getCurrentState(true));
         }
     }
 

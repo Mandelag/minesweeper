@@ -57,10 +57,14 @@ public class CachedGeoToolsGridGenerator implements QueryableGeoGridTemplateGene
         if(result == null){
             try {
                 cachedGrid.put(hash, countryToGrid(featureQuery, nGrid));
-            }catch(IOException | CQLException e){
-                return query("Singapore", 700);
+                return cachedGrid.get(hash);
+            }catch(CQLException e){
+                System.out.println(e);
+            }catch(IOException e){
+                System.out.println(e);
             }
         }
+        System.out.println("Using cache!");
         return result;
     }
     
@@ -69,7 +73,7 @@ public class CachedGeoToolsGridGenerator implements QueryableGeoGridTemplateGene
         FileDataStore fds = FileDataStoreFinder.getDataStore(worldShapefile);
         SimpleFeatureSource featureSource = fds.getFeatureSource();
 
-        try (SimpleFeatureIterator iterator = featureSource.getFeatures(CQL.toFilter(query.replace("'", "\\'") + "'")).features()) {
+        try (SimpleFeatureIterator iterator = featureSource.getFeatures(CQL.toFilter(query)).features()) {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
                 Object og = feature.getAttribute(0);

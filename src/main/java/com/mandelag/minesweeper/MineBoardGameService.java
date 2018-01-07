@@ -20,7 +20,7 @@ public class MineBoardGameService {
         if(templater == null){
             templater = new CachedGeoToolsGridGenerator("C:\\Users\\keenan\\shapefile\\TM_WORLD_BORDERS-0.3.shp");
         }
-        this.mb = new MineBoard(templater.query(country, size), 10);
+        this.mb = new MineBoard(templater.query("NAME='"+country.replace("'","")+"'", size).toIntegerArrays(), 10);
         System.out.println(mb);
     }
 
