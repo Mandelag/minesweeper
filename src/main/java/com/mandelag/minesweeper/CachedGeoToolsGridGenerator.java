@@ -97,19 +97,8 @@ public class CachedGeoToolsGridGenerator implements QueryableGeoGridTemplateGene
 
         Coordinate envelopeCentre = ei.centre();
         CoordinateReferenceSystem crsIn = CRS.decode("EPSG:4326");
-        CoordinateReferenceSystem crsOut = CRS.parseWKT("PROJCS[\"Lambert_Azimuthal_Equal_Area\",\n"
-                + "    GEOGCS[\"GCS_WGS_1984\",\n"
-                + "        DATUM[\"D_WGS_1984\",\n"
-                + "            SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],\n"
-                + "        PRIMEM[\"Greenwich\",0.0],\n"
-                + "        UNIT[\"Degree\",0.0174532925199433]],\n"
-                + "    PROJECTION[\"Lambert_Azimuthal_Equal_Area\"],\n"
-                + "    PARAMETER[\"False_Easting\",0.0],\n"
-                + "    PARAMETER[\"False_Northing\",0.0],\n"
-                + "    PARAMETER[\"Central_Meridian\"," + envelopeCentre.x + "],\n"
-                + "    PARAMETER[\"Latitude_Of_Origin\"," + envelopeCentre.y + "],\n"
-                + "    UNIT[\"Meter\",1.0]]");
-
+        CoordinateReferenceSystem crsOut = getCustomLAEAProjection(envelopeCentre.x, envelopeCentre.y);
+        
         MathTransform transform = CRS.findMathTransform(crsIn, crsOut);
         Geometry projectedGeom = JTS.transform((Geometry) geom.clone(), transform);
         Geometry envelopeGeom = projectedGeom.getEnvelope();
@@ -146,5 +135,20 @@ public class CachedGeoToolsGridGenerator implements QueryableGeoGridTemplateGene
             }
         }
         return new ImmutableGrid(resultArray);
+    }
+    
+    private CoordinateReferenceSystem getCustomLAEAProjection(double x, double y) throws FactoryException {
+        return CRS.parseWKT("PROJCS[\"Lambert_Azimuthal_Equal_Area\",\n"
+                + "    GEOGCS[\"GCS_WGS_1984\",\n"
+                + "        DATUM[\"D_WGS_1984\",\n"
+                + "            SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],\n"
+                + "        PRIMEM[\"Greenwich\",0.0],\n"
+                + "        UNIT[\"Degree\",0.0174532925199433]],\n"
+                + "    PROJECTION[\"Lambert_Azimuthal_Equal_Area\"],\n"
+                + "    PARAMETER[\"False_Easting\",0.0],\n"
+                + "    PARAMETER[\"False_Northing\",0.0],\n"
+                + "    PARAMETER[\"Central_Meridian\"," + x + "],\n"
+                + "    PARAMETER[\"Latitude_Of_Origin\"," + y + "],\n"
+                + "    UNIT[\"Meter\",1.0]]");
     }
 }
