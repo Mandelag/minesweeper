@@ -223,7 +223,9 @@ public class MineBoard {
         int x, y;
         boolean bombExist = true;
         Random r = new Random();
-        for (int b = bombs; b > 0; b--) {
+        int breaker = 0;
+        int MAX_LOOP = 512;
+        for (int b = bombs; b > 0 && breaker++ > MAX_LOOP; b--) {
             x = r.nextInt(width);
             y = r.nextInt(height);
             if (grid[y][x] < 0) {
