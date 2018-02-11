@@ -10,11 +10,11 @@
         </session-timeout>
     </session-config>
     <servlet>
-        <servlet-name>StartGame</servlet-name>
+        <servlet-name>start-game</servlet-name>
         <servlet-class>com.mandelag.minesweeper.GameServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>StartGame</servlet-name>
+        <servlet-name>start-game</servlet-name>
         <url-pattern>/StartGame</url-pattern>
     </servlet-mapping>
 </web-app>

@@ -28,7 +28,11 @@ import org.opengis.referencing.operation.TransformException;
 
 /**
  * Implementation of QueryableGeoGridTemplateGenerator using GeoTools Library.
- * Geospatial function are all in here.
+ * Geospatial data handling are all encapsulated in this class.
+ * This class functions as ESRI Shapefile reader, enabling queries to the shapefile,
+ * return the feature and its geometry and convert them into grid template.
+ * Grid tempate is a minesweeper grid with inside and outside region. In this case,
+ * it represents a country areas and shape. The inside areas are still zeros.
  * 
  * @author Keenan Gebze
  */
@@ -61,10 +65,16 @@ public class CachedGeoToolsGridGenerator implements QueryableGeoGridTemplateGene
                 System.out.println(e);
             }
         }
-        System.out.println("Using cache!");
         return result;
     }
     
+    /**
+     * Convert queried geometry data into grid that can be consumed by minesweeper grid.
+     * If the query return more than one feature, then only the first feature will be considered.
+     * @param query query string to use to read an individual feature.
+     * @param nGrid estimated number of grid to divide the polygon.
+     * @return immutable grid of the gridded country template.
+     */
     private ImmutableGrid countryToGrid(String query, int nGrid) throws IOException, CQLException {
         File worldShapefile = new File(fileName);
         FileDataStore fds = FileDataStoreFinder.getDataStore(worldShapefile);
@@ -88,6 +98,13 @@ public class CachedGeoToolsGridGenerator implements QueryableGeoGridTemplateGene
         return countryToGrid("NAME='Singapore'", 400);
     }
 
+    /**
+     * Convert the input geometry into an immutable grid.
+     * 
+     * @param geom the geometry that wants to be gridded.
+     * @param nGrid the estimated total number of grids.
+     * @return an ImmutableGrid class representing the grid template.
+     */
     private ImmutableGrid geometryToGrid(Geometry geom, int nGrid) throws FactoryException, MismatchedDimensionException, TransformException {
         System.setProperty("org.geotools.referencing.forceXY", "true");
         Envelope ei = geom.getEnvelopeInternal();
@@ -134,7 +151,14 @@ public class CachedGeoToolsGridGenerator implements QueryableGeoGridTemplateGene
         return new ImmutableGrid(resultArray);
     }
     
-    private CoordinateReferenceSystem getCustomLAEAProjection(double x, double y) throws FactoryException {
+    /**
+     * Get the custom projection.
+     * @param lon the center longitude of the LAEA projection.
+     * @param lat the center latitude of the LAEA projection.
+     * @return The coordinate reference system used to project the geometry.
+     * @throws FactoryException 
+     */
+    private CoordinateReferenceSystem getCustomLAEAProjection(double lon, double lat) throws FactoryException {
         return CRS.parseWKT("PROJCS[\"Lambert_Azimuthal_Equal_Area\",\n"
                 + "    GEOGCS[\"GCS_WGS_1984\",\n"
                 + "        DATUM[\"D_WGS_1984\",\n"
@@ -144,8 +168,8 @@ public class CachedGeoToolsGridGenerator implements QueryableGeoGridTemplateGene
                 + "    PROJECTION[\"Lambert_Azimuthal_Equal_Area\"],\n"
                 + "    PARAMETER[\"False_Easting\",0.0],\n"
                 + "    PARAMETER[\"False_Northing\",0.0],\n"
-                + "    PARAMETER[\"Central_Meridian\"," + x + "],\n"
-                + "    PARAMETER[\"Latitude_Of_Origin\"," + y + "],\n"
+                + "    PARAMETER[\"Central_Meridian\"," + lon + "],\n"
+                + "    PARAMETER[\"Latitude_Of_Origin\"," + lat + "],\n"
                 + "    UNIT[\"Meter\",1.0]]");
     }
 }

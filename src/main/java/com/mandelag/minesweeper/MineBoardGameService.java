@@ -26,7 +26,7 @@ public class MineBoardGameService {
      * @return a JSON string containing opened minesweeper grid.
      */
     public String open(int x, int y) {
-        if (isLost()) {
+        if (lost) {
             return "{\"status\":\"Game ended\"}";
         }
         StringBuilder sb = new StringBuilder("{");
@@ -40,23 +40,27 @@ public class MineBoardGameService {
         return sb.toString();
     }
 
+    /**
+     * Get the grid.
+     * @param hidden specify whether the returned grid contain grid values or only template (hidden).
+     * @return return the minesweeper grid values or grid template.
+     */
     public String getCurrentState(boolean hidden) {
-        //if (isLost()) {
-        //    return "{\"status\":\"Game ended\"}";
-        //}
+        if (lost) {
+            return "{\"status\":\"Game ended\"}";
+        }
         StringBuilder sb = new StringBuilder("{");
-        String sessionId = "hehehehe";
-        //sb.append("\"sessionId\": \"").append(sessionId).append("\",\n");
         sb.append("\"grid\": ")
                 .append(MineBoardGameService.immutableGridToJson(mineBoard.getGrid(), hidden))
                 .append("}");
         return sb.toString();
     }
 
-    public boolean isLost() {
-        return lost;
-    }
-
+    /**
+     * Convert an integer array to json array.
+     * @param grid the input integer array.
+     * @return JSON integer array of the integer array.
+     */
     public static String arrayToJson(int[][] grid) {
         StringBuilder jsonArray = new StringBuilder("[");
         for (int h = 0; h < grid.length; h++) {
@@ -71,6 +75,12 @@ public class MineBoardGameService {
         return jsonArray.toString();
     }
 
+    /**
+     * Convert immutable grid into JSON integer array.
+     * @param ig input immutable grid object.
+     * @param hide specify wether the grid values are hiden or not.
+     * @return JSON integer array of the immutable grid.
+     */
     public static String immutableGridToJson(ImmutableGrid ig, boolean hide) {
         StringBuilder jsonArray = new StringBuilder("[");
         for (int y = 0; y < ig.getHeight(); y++) {
