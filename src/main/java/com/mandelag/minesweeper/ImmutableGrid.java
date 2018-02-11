@@ -1,16 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mandelag.minesweeper;
 
-
 /**
- * A wrapper class for two dimensional array.
- * Applying Immutable Object design pattern.
+ * Two dimensional immutable byte array.
  * 
- * @author Keenan
+ * @author Keenan Gebze
  */
 public class ImmutableGrid {
     private final byte[][] grid;
@@ -64,12 +57,36 @@ public class ImmutableGrid {
         }
     }
 
+    /**
+     * Get the width of the array.
+     * The width of this array 2nd dimension of the array.
+     * @return the width of the two dimensional array.
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * Get the height of the array.
+     * The width of this array 1st dimension of the array.
+     * @return the height of the two dimensional array.
+     */
     public int getHeight() {
         return height;
+    }
+    
+    /**
+     * Convert the internal byte array as an integer array.
+     * @return the integer array.
+     */
+    public int[][] toIntegerArrays(){
+        int[][] result = new int[getHeight()][getWidth()];
+        for (int h = 0; h < this.getHeight(); h++) {
+            for (int w = 0; w < this.getWidth(); w++) {
+                result[h][w] = get(w,h);
+            }
+        }
+        return result;
     }
     
     @Override
@@ -83,15 +100,4 @@ public class ImmutableGrid {
         }
         return result;
     }
-    
-    public int[][] toIntegerArrays(){
-        int[][] result = new int[getHeight()][getWidth()];
-        for (int h = 0; h < this.getHeight(); h++) {
-            for (int w = 0; w < this.getWidth(); w++) {
-                result[h][w] = get(w,h);
-            }
-        }
-        return result;
-    }
-    
 }

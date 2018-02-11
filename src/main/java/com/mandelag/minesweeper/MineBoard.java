@@ -55,6 +55,10 @@ public class MineBoard {
         return result;
     }
 
+    /**
+     * Return the byte array internal representation of the minesweeper grid.
+     * @return an ImmutableGrid instance representing the minesweeper grid.
+     */
     public ImmutableGrid getGrid() {
         return grid;
     }
@@ -88,7 +92,7 @@ public class MineBoard {
         int[][] result = open(new int[height][width], x, y);
         int[][] openedGrid = new int[height][width];
         // register the opened grid in the openedGrid array
-        MineBoard.printArray(result);
+
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result[i].length; j++) {
                 //openedGrid[i][j] = result[i][j] == -99 ? grid[i][j] : openedGrid[i][j];
@@ -267,15 +271,5 @@ public class MineBoard {
             }
         }
         return grid;
-    }
-    
-    public static void printArray(int[][] array) {
-        for (int h = 0; h < array.length; h++) {
-            for (int w = 0; w < array[h].length; w++) {
-                System.out.print(array[h][w] >= 0 ? "  " + array[h][w] : " " + array[h][w]);
-            }
-            System.out.println("");
-        }
-        System.out.println("");
     }
 }

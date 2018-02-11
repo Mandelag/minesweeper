@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mandelag.minesweeper;
 
 import java.io.IOException;
@@ -14,8 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- *
- * @author Keenan
+ * Servlet that handles the game services.
+ * It will create a new game session (MineBoardGameService) if it receives a "newGame" task parameter.
+ * It will return opened grids in the current session given an "open" task parameter and x y parameter.
+ * @author Keenan Gebze
  */
 public class GameServlet extends HttpServlet {
 
@@ -38,7 +35,6 @@ public class GameServlet extends HttpServlet {
                 break;
             case "open":
                 processOpen(request, response);
-                System.out.println("EXECUTED");
                 break;
             default:
         }
@@ -118,7 +114,6 @@ public class GameServlet extends HttpServlet {
         
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            //out.print("WEH");
             out.print(mb.open(x, y));
         }
     }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mandelag.minesweeper;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -33,6 +28,8 @@ import org.opengis.referencing.operation.TransformException;
 
 /**
  * Implementation of QueryableGeoGridTemplateGenerator using GeoTools Library.
+ * Geospatial function are all in here.
+ * 
  * @author Keenan Gebze
  */
 public class CachedGeoToolsGridGenerator implements QueryableGeoGridTemplateGenerator{

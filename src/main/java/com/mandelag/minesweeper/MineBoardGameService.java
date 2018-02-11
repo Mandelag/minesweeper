@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mandelag.minesweeper;
 
 /**
@@ -12,7 +7,7 @@ package com.mandelag.minesweeper;
  */
 public class MineBoardGameService {
 
-    private MineBoard mb;
+    private MineBoard mineBoard;
     private boolean lost;
     private static QueryableGeoGridTemplateGenerator templater;
 
@@ -20,25 +15,28 @@ public class MineBoardGameService {
         if(templater == null){
             templater = new CachedGeoToolsGridGenerator("C:\\Users\\keenan\\shapefile\\TM_WORLD_BORDERS-0.3.shp");
         }
-        this.mb = new MineBoard(templater.query("NAME='"+country.replace("'","")+"'", size).toIntegerArrays(), 10);
-        System.out.println(mb);
+        this.mineBoard = new MineBoard(templater.query("NAME='"+country.replace("'","")+"'", size).toIntegerArrays(), 10);
+        System.out.println(mineBoard);
     }
 
+    /**
+     * Open a minesweeper cell at a given coordinate.
+     * @param x the x location of the cell.
+     * @param y the y location of the cell.
+     * @return a JSON string containing opened minesweeper grid.
+     */
     public String open(int x, int y) {
         if (isLost()) {
             return "{\"status\":\"Game ended\"}";
         }
         StringBuilder sb = new StringBuilder("{");
-        String sessionId = "hehehehe";
-        //sb.append("\"sessionId\": \"").append(sessionId).append("\",\n");
-        int[][] opened = mb.open(x, y);
+        int[][] opened = mineBoard.open(x, y);
         if(opened[y][x] < 0 && opened[y][x] >= -90){
             lost = true;
         }
         sb.append("\"grid\": ")
                 .append(MineBoardGameService.arrayToJson(opened))
                 .append("}");
-        MineBoard.printArray(opened);
         return sb.toString();
     }
 
@@ -50,7 +48,7 @@ public class MineBoardGameService {
         String sessionId = "hehehehe";
         //sb.append("\"sessionId\": \"").append(sessionId).append("\",\n");
         sb.append("\"grid\": ")
-                .append(MineBoardGameService.immutableGridToJson(mb.getGrid(), hidden))
+                .append(MineBoardGameService.immutableGridToJson(mineBoard.getGrid(), hidden))
                 .append("}");
         return sb.toString();
     }

@@ -1,14 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mandelag.minesweeper;
 
 import java.util.ArrayList;
 /**
- *
- * @author Keenan
+ * An interface for any queryable (polygon) shape that can be converted into grid template.
+ * @author Keenan Gebze
  */
 public interface QueryableGeoGridTemplateGenerator {
     public abstract ArrayList<String> listFieldEntry(String field);
