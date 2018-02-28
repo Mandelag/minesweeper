@@ -40,7 +40,7 @@ public class MineBoard {
         /* height are determined by the array length of the array first entry */
         this.width = gridTemplate[0].length;
         this.bombs = (this.height * this.width) / 20;
-        this.grid = new ImmutableGrid(initializeBoard(gridTemplate));
+        this.grid = new ImmutableGrid(placeBombs(gridTemplate));
     }
     
     @Override
@@ -112,7 +112,7 @@ public class MineBoard {
     }
 
     /**
-     * Method that are called when the a tile is clicked. It will reveal the
+     * Method that is called when the a tile is clicked. It will reveal the
      * tile number in the resulting array. If grid[y,x] >= 1 && grid[y,x] <= 8
      * then only that particular tile is revealed. If grid[y,x] == 0 then it
      * will search recursively for neighboring zeros and reveal the adjancent
@@ -223,18 +223,24 @@ public class MineBoard {
      * @param grid
      * @return 
      */
-    private int[][] initializeBoard(int[][] grid) {
+    private int[][] placeBombs(int[][] grid) {
         int x, y;
         boolean bombExist = true;
         Random r = new Random();
         int breaker = 0;
         int MAX_LOOP = 512;
+        
+        //place the bombs
         for (int b = bombs; b > 0 && breaker++ > MAX_LOOP; b--) {
             x = r.nextInt(width);
             y = r.nextInt(height);
+            
+            // check wether bombs cannot be placed (<0) or can be placed.
             if (grid[y][x] < 0) {
+                //preserve the bomb, put it in another location.
                 b++;
             } else {
+                // places the bomb in x, y and update (+1) the surrounding cells.
                 grid[y][x] = -9;
                 try {
                     grid[y][x + 1] += 1;
