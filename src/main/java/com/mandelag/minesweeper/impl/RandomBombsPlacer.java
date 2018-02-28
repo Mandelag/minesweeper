@@ -5,7 +5,6 @@
  */
 package com.mandelag.minesweeper.impl;
 
-import com.mandelag.minesweeper.ImmutableGrid;
 import com.mandelag.minesweeper.MinesweeperPlaceBombsAlgorithm;
 import java.util.Random;
 
@@ -13,19 +12,18 @@ import java.util.Random;
  *
  * @author Keenan
  */
-public class RandomBombPlacer implements MinesweeperPlaceBombsAlgorithm{
+public class RandomBombsPlacer implements MinesweeperPlaceBombsAlgorithm{
 
-    private int x, y;
-    private final Random r = new Random();
-    private int breaker = 0;
-    private final int MAX_LOOP = 512;
-        
     @Override
     public int[][] placeBombs(int[][] grid, int bombs) {
+        int x, y;
+        Random r = new Random();
+        int breaker = 0;
+        int MAX_LOOP = 512;
         //place the bombs
-        for (int b = bombs; b > 0 && breaker++ > MAX_LOOP; b--) {
-            x = r.nextInt(grid.length);
-            y = r.nextInt(grid[0].length);
+        for (int b = bombs; b > 0 && breaker++ < MAX_LOOP; b--) {
+            x = r.nextInt(grid[0].length);
+            y = r.nextInt(grid.length);
             
             // check wether bombs cannot be placed (<0) or can be placed.
             if (grid[y][x] < 0) {
@@ -34,6 +32,7 @@ public class RandomBombPlacer implements MinesweeperPlaceBombsAlgorithm{
             } else {
                 // places the bomb in x, y and update (+1) the surrounding cells.
                 grid[y][x] = -9;
+                System.out.println(x+","+y);
                 try {
                     grid[y][x + 1] += 1;
                 } catch (ArrayIndexOutOfBoundsException e) {
