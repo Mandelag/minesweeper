@@ -10,5 +10,5 @@ package com.mandelag.minesweeper;
  * @author Keenan Gebze
  */
 public interface MinesweeperPlaceBombsAlgorithm {
-    int[][] placeBombs(ImmutableGrid ig);
+    int[][] placeBombs(int[][] grid, int nBombs);
 }

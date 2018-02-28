@@ -9,7 +9,7 @@ package com.mandelag.minesweeper;
  *
  * @author Keenan Gebze
  */
-public interface MineseeperOpenAlgorithm {
+public interface MinesweeperOpenAlgorithm {
     void setGrid(ImmutableGrid ig);
     int[][] open(int x, int y);
 }
