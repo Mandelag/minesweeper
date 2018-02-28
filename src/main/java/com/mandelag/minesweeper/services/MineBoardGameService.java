@@ -1,4 +1,9 @@
-package com.mandelag.minesweeper;
+package com.mandelag.minesweeper.services;
+
+import com.mandelag.minesweeper.impl.CachedGeoToolsGridGenerator;
+import com.mandelag.minesweeper.ImmutableGrid;
+import com.mandelag.minesweeper.MineBoard;
+import com.mandelag.minesweeper.QueryableGeoGridTemplateGenerator;
 
 /**
  * Service wrapper class for the class MineBoard.

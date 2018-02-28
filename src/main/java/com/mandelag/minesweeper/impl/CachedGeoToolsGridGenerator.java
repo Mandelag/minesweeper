@@ -1,5 +1,8 @@
-package com.mandelag.minesweeper;
+package com.mandelag.minesweeper.impl;
 
+import com.mandelag.minesweeper.ImmutableGrid;
+import com.mandelag.minesweeper.MineBoard;
+import com.mandelag.minesweeper.QueryableGeoGridTemplateGenerator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;

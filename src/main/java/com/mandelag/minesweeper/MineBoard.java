@@ -20,8 +20,8 @@ public class MineBoard {
     private int bombs;
     private final ImmutableGrid grid;
 
-    static final int VISITED = 9;
-    static final int OUTSIDE = -99;
+    public static final int VISITED = 9;
+    public static final int OUTSIDE = -99;
 
     public MineBoard() {
         this(10, 10);

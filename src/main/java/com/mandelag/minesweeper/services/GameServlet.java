@@ -1,5 +1,6 @@
-package com.mandelag.minesweeper;
+package com.mandelag.minesweeper.services;
 
+import com.mandelag.minesweeper.services.MineBoardGameService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
