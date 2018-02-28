@@ -32,7 +32,6 @@ public class RandomBombsPlacer implements MinesweeperPlaceBombsAlgorithm{
             } else {
                 // places the bomb in x, y and update (+1) the surrounding cells.
                 grid[y][x] = -9;
-                System.out.println(x+","+y);
                 try {
                     grid[y][x + 1] += 1;
                 } catch (ArrayIndexOutOfBoundsException e) {
